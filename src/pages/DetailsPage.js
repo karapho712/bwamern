@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import Fade from "react-reveal/Fade";
+import { connect } from "react-redux";
 
 import Header from "parts/Header";
 import PageDetailTitle from "parts/PageDetailTitle";
@@ -14,15 +15,23 @@ import Footer from "parts/Footer";
 import ItemDetails from "json/itemDetails.json";
 
 import { checkoutBooking } from "store/actions/checkout";
-import { connect } from "react-redux";
+
+import { fetchPage } from "store/actions/page";
 
 class DetailsPage extends Component {
   componentDidMount() {
     window.title = "Details Page";
     window.scrollTo(0, 0);
+
+    if (!this.props.page[this.props.params.id])
+      this.props.fetchPage(
+        `${process.env.REACT_APP_HOST}/api/v1/member/detail-page/${this.props.params.id}`
+      );
   }
 
   render() {
+    const { page } = this.props;
+
     const breadcrumb = [
       { pageTitle: "Home", pageHref: "" },
       { pageTitle: "House Details", pageHref: "" },
@@ -59,4 +68,10 @@ class DetailsPage extends Component {
   }
 }
 
-export default connect(null, { checkoutBooking })(DetailsPage);
+const mapStateToProps = (state) => ({
+  page: state.page.detailsPage,
+});
+
+export default connect(mapStateToProps, { checkoutBooking, fetchPage })(
+  DetailsPage
+);
